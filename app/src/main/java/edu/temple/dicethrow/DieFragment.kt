@@ -10,13 +10,13 @@ import kotlin.random.Random
 
 class DieFragment : Fragment() {
 
-    val DIESIDE = "sidenumber"
-    var previousRoll = 0
-    var currentRoll = 0
+    private val DIESIDE = "sidenumber"
+    private var dieVal = 0
+    private val dieValTag = "dieVal"
 
-    lateinit var dieTextView: TextView
+    private lateinit var dieTextView: TextView
 
-    var dieSides: Int = 20
+    private var dieSides: Int = 20
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class DieFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_die, container, false).apply {
             dieTextView = findViewById(R.id.dieTextView)
@@ -40,15 +40,11 @@ class DieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        savedInstanceState?.run {
-            currentRoll
-        }
-
         if (savedInstanceState == null)
             throwDie()
         else {
-            previousRoll = savedInstanceState.getInt("dieVal")
-            dieTextView.text = previousRoll.toString()
+            dieVal = savedInstanceState.getInt(dieValTag)
+            dieTextView.text = dieVal.toString()
         }
 
         view.setOnClickListener{
@@ -57,20 +53,22 @@ class DieFragment : Fragment() {
     }
 
     fun throwDie() {
-        currentRoll = Random.nextInt(dieSides)+1
-        dieTextView.text = currentRoll.toString()
+        dieVal = Random.nextInt(dieSides)+1
+        dieTextView.text = dieVal.toString()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("dieVal", currentRoll)
+        outState.putInt(dieValTag, dieVal)
     }
 
-//    companion object {
-//        fun newInstance(sides: Int) = DieFragment().apply {
-//            arguments = Bundle().apply{
-//                putInt(DIESIDE, dieSides)
-//            }
-//        }
-//    }
+    companion object {
+        fun newInstance(dieSides: Int) : DieFragment {
+            return DieFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(DIESIDE, dieSides)
+                }
+            }
+        }
+    }
 }
